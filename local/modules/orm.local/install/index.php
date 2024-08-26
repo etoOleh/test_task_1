@@ -54,11 +54,49 @@ class orm_local extends CModule
     {
         Loader::includeModule($this->MODULE_ID);
 
+        /**
+         * Установка баз данных для 1 задания
+         */
+
+        /**
         if (!Application::getConnection(\Orm\Local\OrmTable::getConnectionName())->isTableExists(
             Entity::getInstance('\Orm\Local\OrmTable')->getDBTableName()
         )
         ) {
             Entity::getInstance('\Orm\Local\OrmTable')->createDbTable();
+        }
+        **/
+
+        /**
+         * Установка баз данных для 2 задания
+         */
+
+        if (!Application::getConnection(\Orm\Local\WorkDayTable::getConnectionName())->isTableExists(
+            Entity::getInstance('\Orm\Local\WorkDayTable')->getDBTableName()
+        )
+        ) {
+            Entity::getInstance('\Orm\Local\WorkDayTable')->createDbTable();
+        }
+
+        if (!Application::getConnection(\Orm\Local\WorkDayPauseTable::getConnectionName())->isTableExists(
+            Entity::getInstance('\Orm\Local\WorkDayPauseTable')->getDBTableName()
+        )
+        ) {
+            Entity::getInstance('\Orm\Local\WorkDayPauseTable')->createDbTable();
+        }
+
+        if (!Application::getConnection(\Orm\Local\ProfileTable::getConnectionName())->isTableExists(
+            Entity::getInstance('\Orm\Local\ProfileTable')->getDBTableName()
+        )
+        ) {
+            Entity::getInstance('\Orm\Local\ProfileTable')->createDbTable();
+        }
+
+        if (!Application::getConnection(\Orm\Local\LatenessTable::getConnectionName())->isTableExists(
+            Entity::getInstance('\Orm\Local\LatenessTable')->getDBTableName()
+        )
+        ) {
+            Entity::getInstance('\Orm\Local\LatenessTable')->createDbTable();
         }
 
     }
@@ -77,8 +115,29 @@ class orm_local extends CModule
     {
         Loader::includeModule($this->MODULE_ID);
 
+        /**
+         * Удаление баз данных для 1 задания
+         */
+
+        /**
         Application::getConnection(\Orm\Local\OrmTable::getConnectionName())->
         queryExecute('drop table if exists ' . Entity::getInstance('\Orm\Local\OrmTable')->getDBTableName());
+        */
 
+        /**
+         * Удаление баз данных для 2 задания
+         */
+
+        Application::getConnection(\Orm\Local\WorkDayTable::getConnectionName())->
+        queryExecute('drop table if exists ' . Entity::getInstance('\Orm\Local\WorkDayTable')->getDBTableName());
+
+        Application::getConnection(\Orm\Local\ProfileTable::getConnectionName())->
+        queryExecute('drop table if exists ' . Entity::getInstance('\Orm\Local\ProfileTable')->getDBTableName());
+
+        Application::getConnection(\Orm\Local\WorkDayPauseTable::getConnectionName())->
+        queryExecute('drop table if exists ' . Entity::getInstance('\Orm\Local\WorkDayPauseTable')->getDBTableName());
+
+        Application::getConnection(\Orm\Local\LatenessTable::getConnectionName())->
+        queryExecute('drop table if exists ' . Entity::getInstance('\Orm\Local\LatenessTable')->getDBTableName());
     }
 }
