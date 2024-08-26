@@ -56,6 +56,11 @@ class ExampleOrm extends CBitrixComponent
                 'DATE_INSERT',
             ])->fetchAll();
 
+        if (!$elements) {
+            ShowError(GetMessage("EX2_70_IB_CHECK"));
+            return;
+        }
+
         foreach ($elements as $key => $element) {
             $elements[$key]['DATE_INSERT'] = date('Y-m-d H:i:s', strtotime($element['DATE_INSERT']));
         }
