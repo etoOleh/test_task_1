@@ -40,13 +40,7 @@ class LatenessTable extends DataManager
                 Join::on('this.PROFILE_ID', 'ref.ID')
             ))
             ->configureJoinType('left'),
-            new ORM\Fields\DatetimeField('DATE_START', [
-                'nullable' => true,
-                'default_value' => static function() {
-                    return new DateTime();
-                }
-            ]),
-            new ORM\Fields\DatetimeField('DATE_STOP', [
+            new ORM\Fields\DatetimeField('DATE', [
                 'nullable' => true,
                 'default_value' => static function() {
                     return new DateTime();

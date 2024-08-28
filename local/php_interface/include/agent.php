@@ -7,8 +7,63 @@ use Bitrix\Main\Type\DateTime;
 use Orm\Local\LatenessTable;
 use Bitrix\Main\Config\Option;
 
+function stopUserDayAgent()
+{
 
-function AgentCheckLateness()
+    if (!Loader::includeModule("orm.local")) {
+        return;
+    }
+
+    $i = 0;
+    $currentDay = DateTime::createFromTimestamp(time())->format('d.m.Y');
+
+    $currentDay2 = DateTime::createFromTimestamp(time())->add('+1 day')->format('d.m.Y');
+    $targetTime = new DateTime($currentDay .' 09:00:00');
+    $todayTime = new DateTime($currentDay);
+    $lastTime = new DateTime($currentDay .' 00:00:00');
+
+
+    $profileEntity = ProfileTable::getEntity();
+    $profileRes =
+        (new Query($profileEntity))
+            ->setFilter([
+                '>DATE_START' => $todayTime,
+            ])
+            ->setSelect([
+                'ID',
+                'LOGIN',
+                'NAME',
+                'LAST_NAME',
+                'DATE_START' => 'Orm\Local\WorkDayTable:PROFILE.DATE_START',
+                'DATE_STOP' => 'Orm\Local\WorkDayTable:PROFILE.DATE_STOP',
+                'ID_WORKTABLE' => 'Orm\Local\WorkDayTable:PROFILE.ID',
+            ])
+            ->whereNotNull('LOGIN')
+            ->whereNull('DATE_STOP')
+            ->exec();
+
+
+    $lastTime = new DateTime($currentDay2 .' 00:00:00');
+    $count = Option::get("main", "count");
+
+    if ($count == 24) {
+        while ($dataProfileRes = $profileRes->fetch()) {
+            Orm\Local\WorkDayTable::update(
+                $dataProfileRes['ID_WORKTABLE'],
+                [
+                    'DATE_STOP' => $lastTime,
+                ]);
+        }
+        Option::set("main", "count", 0);
+    }
+
+    $i++;
+    Option::set("main", "count", $i);
+
+    return 'stopUserDayAgent();';
+}
+
+function checkLatenessAgent()
 {
     if (!Loader::includeModule("orm.local")) {
         return;
@@ -66,30 +121,26 @@ function AgentCheckLateness()
         }
     }
 
-    return 'AgentCheckLateness();';
+    return 'checkLatenessAgent();';
 }
 
-function test2()
+function stopUserDayAgent_2()
 {
 
     if (!Loader::includeModule("orm.local")) {
         return;
     }
 
-    $i = 0;
     $currentDay = DateTime::createFromTimestamp(time())->format('d.m.Y');
-
-    $currentDay2 = DateTime::createFromTimestamp(time())->add('+1 day')->format('d.m.Y');
-    $targetTime = new DateTime($currentDay .' 09:00:00');
-    $todayTime = new DateTime($currentDay);
-    $lastTime = new DateTime($currentDay .' 00:00:00');
+    $currentDay2 = DateTime::createFromTimestamp(time())->add('-1 day')->format('d.m.Y');
+    $lastTime = new DateTime($currentDay2 .' 00:00:00');
 
 
     $profileEntity = ProfileTable::getEntity();
     $profileRes =
         (new Query($profileEntity))
             ->setFilter([
-                '>DATE_START' => $todayTime,
+                '<DATE_START' => $currentDay,
             ])
             ->setSelect([
                 'ID',
@@ -103,24 +154,15 @@ function test2()
             ->whereNotNull('LOGIN')
             ->whereNull('DATE_STOP')
             ->exec();
-
-
-    $lastTime = new DateTime($currentDay2 .' 00:00:00');
-    $count = Option::get("main", "count");
-
-    if ($count == 24) {
-        while ($dataProfileRes = $profileRes->fetch()) {
-            Orm\Local\WorkDayTable::update(
-                $dataProfileRes['ID_WORKTABLE'],
-                [
-                    'DATE_STOP' => $lastTime,
-                ]);
-        }
-        Option::set("main", "count", 0);
+    while ($dataProfileRes = $profileRes->fetch()) {
+        Orm\Local\WorkDayTable::update(
+            $dataProfileRes['ID_WORKTABLE'],
+            [
+                'DATE_STOP' => $lastTime,
+            ]);
     }
 
-    $i++;
-    Option::set("main", "count", $i);
 
-    return 'test2();';
+
+    return 'stopUserDayAgent_2();';
 }
