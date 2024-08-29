@@ -7,6 +7,14 @@ use Bitrix\Main\Type\DateTime;
 use Orm\Local\LatenessTable;
 use Bitrix\Main\Config\Option;
 
+/**
+ * @throws \Bitrix\Main\ObjectException
+ * @throws \Bitrix\Main\ObjectPropertyException
+ * @throws \Bitrix\Main\LoaderException
+ * @throws \Bitrix\Main\ArgumentOutOfRangeException
+ * @throws \Bitrix\Main\ArgumentException
+ * @throws \Bitrix\Main\SystemException
+ */
 function stopUserDayAgent()
 {
 
@@ -63,6 +71,13 @@ function stopUserDayAgent()
     return 'stopUserDayAgent();';
 }
 
+/**
+ * @throws \Bitrix\Main\ObjectException
+ * @throws \Bitrix\Main\ObjectPropertyException
+ * @throws \Bitrix\Main\LoaderException
+ * @throws \Bitrix\Main\ArgumentException
+ * @throws \Bitrix\Main\SystemException
+ */
 function checkLatenessAgent()
 {
     if (!Loader::includeModule("orm.local")) {
@@ -96,12 +111,12 @@ function checkLatenessAgent()
             (new Query($latenessEntity))
                 ->setFilter([
                     '=PROFILE_ID' => $dataProfileRes['ID'],
-                    '>DATE_START' => $todayTime,
+                    '>DATE' => $todayTime,
                 ])
                 ->setSelect([
                     'ID',
                     'PROFILE_ID',
-                    'DATE_START',
+                    'DATE',
                 ])
                 ->exec();
 
@@ -115,7 +130,7 @@ function checkLatenessAgent()
 
             LatenessTable::add([
                 'PROFILE_ID' => $dataProfileRes['ID'],
-                'DATE_START' => new DateTime(),
+                'DATE' => new DateTime(),
             ]);
 
         }
